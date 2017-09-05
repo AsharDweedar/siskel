@@ -6,14 +6,11 @@ var Movie = Backbone.Model.extend({
 
   toggleLike: function() {
     // your code here
-    if(this.defaults.like ){
-      this.defaults.like = false;
+    if(this.get('like')){
+      this.set('like' , false);
     } else {
-      this.defaults.like = true;
+      this.set('like', true);
     }
-    //modelView.render()
-    console.log(this.defaults.like)
-    //this.defaults.like = !(this.defaults.like);
   }
 
 });
@@ -21,31 +18,18 @@ var Movie = Backbone.Model.extend({
 var Movies = Backbone.Collection.extend({
 
   model: Movie,
-
+  data: [],
   initialize: function(datumArrOfObj) {
-    // your code here
-    for(var i of datumArrOfObj) {
-      i = new this.model(i);
-      i.on('change:dafaults:like', this.sort(), this);
-    }
-    //this.model.on('change', this.sort())
-    this.data = datumArrOfObj
-    console.log(this.data)
-    
-    
-
+    this.on('change', this.sort, this);
+    //this.set('sorting' , 0);
   },
 
   comparator: 'title',
-
   sortByField: function(field) {
     // your code here
     this.comparator = field;
     this.sort() ;
-  },
-  sort: function () {
-
-   }
+  }
 
 });
 
@@ -81,7 +65,8 @@ var MovieView = Backbone.View.extend({
                         </div>'),
 
   initialize: function(model) {
-    this.model.on('change', this.render(), this)
+    this.model.on('change', this.render, this);
+    this.model.on('click', this.handleClick);
     //if the model changed 
     //call this.render();
     // your code here
@@ -92,7 +77,7 @@ var MovieView = Backbone.View.extend({
   },
 
   handleClick: function() { 
-    this.model.on('click', this.model.toggleLike());
+    this.model.toggleLike();
         // your code here
 
   },
@@ -107,7 +92,7 @@ var MovieView = Backbone.View.extend({
 var MoviesView = Backbone.View.extend({
 
   initialize: function() {
-    this.collection.on("all",this.render() , this)
+    this.collection.on('sort', this.render , this)
     // your code here
   },
 
